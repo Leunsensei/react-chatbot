@@ -1,55 +1,62 @@
-import { useState } from 'react'
-import { Chatbot } from 'supersimpledev';
-import './ChatInput.css';
+import { useState } from "react";
+import { Chatbot } from "supersimpledev";
+import "./ChatInput.css";
 
-export function ChatInput({chatMessages, setChatMessages}) {
+export function ChatInput({ chatMessages, setChatMessages }) {
+  const [inputText, setInputText] = useState("");
 
-  const [inputText, setInputText] = useState('');
-  
   function saveInputText(event) {
-      setInputText(event.target.value);
+    setInputText(event.target.value);
   }
 
   function sendMessage() {
-      const newChatMessages = [
-          ...chatMessages,
-          {
-              message: inputText,
-              sender: 'user',
-              id: crypto.randomUUID()
-          }
-      ]
+    if (!inputText.trim()) return; // Prevent sending empty messages
 
-      setChatMessages(newChatMessages);
+    const newChatMessages = [
+      ...chatMessages,
+      {
+        message: inputText,
+        sender: "user",
+        id: crypto.randomUUID(),
+      },
+    ];
 
-      const response = Chatbot.getResponse(inputText);
-     
-      setChatMessages([
-          ...newChatMessages,
-          {
-              message: response,
-              sender: 'robot',
-              id: crypto.randomUUID()
-          }
-      ]);
+    setChatMessages(newChatMessages);
 
-      setInputText('')
+    const response = Chatbot.getResponse(inputText);
+
+    setChatMessages([
+      ...newChatMessages,
+      {
+        message: response,
+        sender: "robot",
+        id: crypto.randomUUID(),
+      },
+    ]);
+
+    setInputText(""); // Clear input field after sending
   }
-    return (
-      <div 
-      className="chat-input-container">
-      <input 
-          placeholder="Send a message to Chatbot" 
-          size="30" 
-          onChange={saveInputText}
-          value={inputText}
-          className="chat-input"
+
+  function handleKeyPress(event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevents default behavior like form submission
+      sendMessage();
+    }
+  }
+
+  return (
+    <div className="chat-input-container">
+      <input
+        placeholder="Send a message to Chatbot"
+        size="30"
+        onChange={saveInputText}
+        value={inputText}
+        className="chat-input"
+        onKeyDown={handleKeyPress}
       />
-        <button
-         onClick={sendMessage}
-         className="send-button"
-        >Send</button>
-      </div>
-    );
-  }
-
+      <button onClick={sendMessage} className="send-button">
+        Send
+      </button>
+    </div>
+  );
+}
