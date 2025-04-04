@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Chatbot } from "supersimpledev";
 import "./ChatInput.css";
 
 export function ChatInput({ chatMessages, setChatMessages }) {
@@ -23,16 +22,38 @@ export function ChatInput({ chatMessages, setChatMessages }) {
 
     setChatMessages(newChatMessages);
 
-    const response = Chatbot.getResponse(inputText);
+    const response = (input) => {
+      const lower = input.toLowerCase();
+  
+      if (lower.includes('date')) {
+        return `Today's date is ${new Date().toLocaleDateString()}`;
+      } else if (lower.includes('coin')) {
+        return Math.random() < 0.5 ? 'You got heads!' : 'You got tails!';
+      } else if (lower.includes('dice') || lower.includes('die')) {
+        return `You rolled a ${Math.floor(Math.random() * 6) + 1}`;
+      }else if (lower.includes('thank')) {
+        return 'No problem! Let me know if you need help with anything else!';
+      }else if (lower.includes('hi')||lower.includes('hello')) {
+        return 'Hello! How can I help you?';
+      } else {
+        return "Sorry, I didn't quite understand that." + 
+                "Currently, I only know how to flip a coin, roll a dice, or get today's date. Let me know how I can help!";
+      }
+    };
 
-    setChatMessages([
-      ...newChatMessages,
-      {
-        message: response,
-        sender: "robot",
-        id: crypto.randomUUID(),
-      },
-    ]);
+
+    setTimeout(() => {
+        setChatMessages([
+        ...newChatMessages,
+        {
+          message: response(inputText),
+          sender: "robot",
+          id: crypto.randomUUID(),
+        },
+      ]);
+
+    }, 1000);
+    
 
     setInputText(""); // Clear input field after sending
   }
